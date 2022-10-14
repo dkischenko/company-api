@@ -14,7 +14,7 @@ func Logging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		l, err := logger.GetLogger()
 		if err != nil {
-			panic(fmt.Sprintf("cannot init logger: %w", err))
+			panic(fmt.Sprintf("cannot init logger: %+v", err))
 		}
 		start := time.Now()
 		next.ServeHTTP(w, r)
@@ -27,7 +27,7 @@ func PanicAndRecover(next http.Handler) http.Handler {
 		defer func() {
 			l, err := logger.GetLogger()
 			if err != nil {
-				panic(fmt.Sprintf("cannot init logger: %w", err))
+				panic(fmt.Sprintf("cannot init logger: %+v", err))
 			}
 			if err := recover(); err != nil {
 				l.Entry.Logger.Errorf("panic: %+v", err)
@@ -42,7 +42,7 @@ func IsAuthorized(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		l, err := logger.GetLogger()
 		if err != nil {
-			panic(fmt.Sprintf("cannot init logger: %w", err))
+			panic(fmt.Sprintf("cannot init logger: %+v", err))
 		}
 
 		if r.Method != http.MethodGet && strings.Contains(r.URL.Path, "companies") {
@@ -50,7 +50,10 @@ func IsAuthorized(next http.Handler) http.Handler {
 			tokenString := r.Header.Get("Authorization")
 			if len(tokenString) == 0 {
 				w.WriteHeader(http.StatusUnauthorized)
-				w.Write([]byte("Missing Authorization Header"))
+				_, err := w.Write([]byte("Missing Authorization Header"))
+				if err != nil {
+					panic(fmt.Sprintf("cannot write data to the connection: %+v", err))
+				}
 				l.Entry.Logger.Warning("Missing Authorization Header")
 				return
 			}
@@ -59,7 +62,10 @@ func IsAuthorized(next http.Handler) http.Handler {
 			_, err := verifyToken(tokenString)
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
-				w.Write([]byte(fmt.Sprintf("Error verifying JWT token: %w", err)))
+				_, err = w.Write([]byte(fmt.Sprintf("Error verifying JWT token: %+v", err)))
+				if err != nil {
+					panic(fmt.Sprintf("cannot write data to the connection: %+v", err))
+				}
 				return
 			}
 		}

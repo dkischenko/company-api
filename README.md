@@ -19,6 +19,16 @@ export SIGNINKEY=
 go run main.go
 ```
 
+## Linter usage
+
+```bash
+# binary will be $(go env GOPATH)/bin/golangci-lint
+curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.50.0
+
+golangci-lint --version
+golangci-lint run
+```
+
 ## Configuration
 
 | Enviroment Variable | Description               | Default                                                                             |
