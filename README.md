@@ -29,6 +29,11 @@ golangci-lint --version
 golangci-lint run
 ```
 
+## Run tests
+```bash
+go test -race -shuffle=on -coverprofile=coverage.out -v ./...
+```
+
 ## Configuration
 
 | Enviroment Variable | Description               | Default                                                                             |
