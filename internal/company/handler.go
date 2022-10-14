@@ -191,13 +191,13 @@ func (h handler) CreateCompanyHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		responseBody := uerrors.ErrorResponse{
 			Code:    http.StatusBadRequest,
-			Message: fmt.Sprintf("got wrong user data: %+v", err),
+			Message: fmt.Sprintf("got wrong company data: %+v", err),
 		}
 		if err := json.NewEncoder(w).Encode(responseBody); err != nil {
 			h.logger.Entry.Errorf("problems with encoding data: %+v", err)
 			w.WriteHeader(http.StatusBadRequest)
 		}
-		h.logger.Entry.Errorf("got wrong user data: %+v", err)
+		h.logger.Entry.Errorf("got wrong company data: %+v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
